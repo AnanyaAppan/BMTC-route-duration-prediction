@@ -1,9 +1,6 @@
-
 split -l 100000 train.csv part
 
 for f in part*; do mv "$f" "$f.csv"; done
-
-sort --parallel=8 -t"," -n -k1 part*
 
 for f in part*;
 do
