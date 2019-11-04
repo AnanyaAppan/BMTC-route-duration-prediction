@@ -4,7 +4,7 @@ remove_indices = []
 chunksize = 10 ** 5
 ndx = 1
 
-chunk = pd.read_csv("../BMTC_sorted/sorted_partya.csv", names = ["busId" , "latitude", "longitude", "angle", "speed", "timestamp"])
+chunk = pd.read_csv("../../BMTC/sorted_partya.csv", names = ["busId" , "latitude", "longitude", "angle", "speed", "timestamp"])
 df = pd.DataFrame(chunk)
 while ndx < chunksize - 2:
     df_0 = pd.DataFrame(df.iloc[ndx-1]).transpose()
@@ -30,7 +30,7 @@ while ndx < chunksize:
     ndx += 1
 
 
-df.to_csv('../zero_removed.csv', mode='a', header=False)#\\, index = False)
+df.to_csv('../../BMTC/zero_removed.csv', mode='a', header=False, index = False)
 
 print(remove_indices)
 
