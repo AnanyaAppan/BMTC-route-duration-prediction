@@ -15,5 +15,5 @@ df = spark.read.load(filename,format="csv", sep=",", inferSchema="true", header=
 df.printSchema()
 print("starting to filer...\n")
 df_filtered = df.filter((df.latitude > 10) & (df.latitude < 15) & (df.longitude > 75) & (df.longitude < 80))
-df_filtered.show()
-df_filtered.toPandas().to_csv('../../BMTC/filtered_.csv')
+# df_filtered.show()
+df_filtered.toPandas().to_csv("../../BMTC/filtered_zero_removed.csv")

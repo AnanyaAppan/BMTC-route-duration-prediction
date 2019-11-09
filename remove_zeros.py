@@ -9,7 +9,7 @@ df = pd.DataFrame(chunk)
 while ndx < chunksize - 2:
     df_0 = pd.DataFrame(df.iloc[ndx-1]).transpose()
     df_1 = pd.DataFrame(df.iloc[ndx]).transpose()
-    df_2 = pd.DataFrame(df.iloc[ndx+1]).transpose()
+    df_2 = pd.DataFrame(df.iloc[ndx+1]).transpose() 
     if df_1.speed[ndx] == 0:
         if df_0.speed[ndx-1] == 0 and df_2.speed[ndx+1] == 0 and df_0.angle[ndx-1] == df_1.angle[ndx] and df_1.angle[ndx] == df_2.angle[ndx+1]:
             remove_indices.append(ndx)
