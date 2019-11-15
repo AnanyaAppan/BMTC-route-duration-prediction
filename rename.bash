@@ -8,3 +8,9 @@ do
 done
 
 sort -m --parallel=8 -t"," -k1 sorted* > final_sorted.csv
+
+for f in '../../BMTC/filtered_data/'*;
+do
+    python3 make_grid.py "${f:25:-1}v"
+    echo{"${f:25:-1}v"}
+done
