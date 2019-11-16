@@ -1,7 +1,10 @@
 from pyspark.sql import SparkSession
+from pyspark.sql import SQLContext
 import sys
+import pandas as pd
+from pyspark.sql.functions import monotonically_increasing_id
 
-filename = "../../BMTC/filtered_data/" + sys.argv[1]
+filename = "/media/slr/TOSHIBA EXT/filtered_data/filtered_sorted_partaa.csv"
 
 spark = SparkSession \
     .builder \
@@ -16,25 +19,28 @@ df.printSchema()
 length_lat = 0.032/2
 length_long = 0.043/2
 # i rows 42
-i = 21
+i = 0
 # j columns 34
-j = 17
-lat = 12.66 + 21*length_lat
-long = 77.27 + 17*length_long
+j = 0
 
-# while(lat < 13.32):
-#     while(long < 78):
-#         if(i==21 and j==17):
-#             df_filtered = df.filter((df.latitude > lat) & (df.latitude < lat+length_lat) & (df.longitude > long) & (df.longitude < long+length_long))
-#             df_filtered.toPandas().to_csv('../../BMTC/gridData/grid_'+str(i)+'_'+str(j)+'.csv', mode='a', header=False, index=False)
-#         long += length_long
-#         j += 1
-#     i += 1
-#     j = 0
-#     lat += length_lat
+lat = 12.66 
+long = 77.27 
 
-df_filtered = df.filter((df.latitude > lat) & (df.latitude < lat+length_lat) & (df.longitude > long) & (df.longitude < long+length_long))
-df_filtered.toPandas().to_csv('../../BMTC/gridData/grid_'+str(i)+'_'+str(j)+'.csv', mode='a', header=False, index=False)
+listGrid = []
+while(lat < 13.32):
+    while(long < 78):
+        listGrid.append((i*34) + 42)
+        long += length_long
+        j += 1
+    i += 1
+    j = 0
+    lat += length_lat
 
+df_grid = SQLContext.createDataFrame([(l,) for l in listGrid], ['grid_value'])
+df = df.withColumn("row_idx", monotonically_increasing_id())
+df_grid = df_grid.withColumn("row_idx", monotonically_increasing_id())
+final_df = df.join(df_grid, df.row_idx == df_grid.row_idx).\
+             drop("row_idx")
+final_df.to_csv("../BMTC_sorted/filtered_encoded_partaa.csv")
 
 
