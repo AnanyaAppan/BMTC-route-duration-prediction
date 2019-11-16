@@ -22,6 +22,7 @@ length_long = 0.043/2
 i = 0
 # j columns 34
 j = 0
+
 lat = 12.66 
 long = 77.27 
 
