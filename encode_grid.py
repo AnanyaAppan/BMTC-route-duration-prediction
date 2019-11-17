@@ -4,7 +4,7 @@ import sys
 import pandas as pd
 from pyspark.sql.functions import monotonically_increasing_id
 
-filename = "/media/slr/TOSHIBA EXT/filtered_data/filtered_sorted_partaa.csv"
+filename = "filtered_sorted_partaa.csv"
 
 spark = SparkSession \
     .builder \
@@ -22,6 +22,7 @@ length_long = 0.043/2
 i = 0
 # j columns 34
 j = 0
+
 lat = 12.66 
 long = 77.27 
 
@@ -35,11 +36,7 @@ while(lat < 13.32):
     j = 0
     lat += length_lat
 
-df_grid = SQLContext.createDataFrame([(l,) for l in listGrid], ['grid_value'])
-df = df.withColumn("row_idx", monotonically_increasing_id())
-df_grid = df_grid.withColumn("row_idx", monotonically_increasing_id())
-final_df = df.join(df_grid, df.row_idx == df_grid.row_idx).\
-             drop("row_idx")
+final_df = df.withColumn("encoded_grid",listGrid)
 final_df.to_csv("../BMTC_sorted/filtered_encoded_partaa.csv")
 
 

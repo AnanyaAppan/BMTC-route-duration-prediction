@@ -14,3 +14,9 @@ do
     python3 make_grid.py "${f:25:-1}v"
     echo{"${f:25:-1}v"}
 done
+
+for f in '../../BMTC/filtered_data/'*;
+do
+    python3 encode_grid.py "${f:25:-1}v"
+    echo{"${f:25:-1}v"}
+done

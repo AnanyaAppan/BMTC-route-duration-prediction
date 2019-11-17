@@ -1,0 +1,2 @@
+comp integer [1, 20] [10]
+deg integer [2, 5] [3]

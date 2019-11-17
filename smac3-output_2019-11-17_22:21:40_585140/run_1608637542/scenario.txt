@@ -1,0 +1,12 @@
+run_obj = quality
+always_race_default = False
+wallclock_limit = inf
+initial_incumbent = DEFAULT
+pcs_fn = smac3-output_2019-11-17_22:21:40_585140/run_1608637542/configspace.json
+par_factor = 10
+ta_run_limit = 1.0
+algo_runs_timelimit = inf
+overall_obj = par10
+deterministic = True
+execdir = .
+cost_for_crash = 2147483647.0
