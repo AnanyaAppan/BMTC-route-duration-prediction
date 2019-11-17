@@ -4,7 +4,6 @@ import sys
 import pandas as pd
 from pyspark.sql.functions import monotonically_increasing_id
 
-
 filename = "filtered_sorted_partaa.csv"
 
 spark = SparkSession \
