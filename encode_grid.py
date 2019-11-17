@@ -4,7 +4,8 @@ import sys
 import pandas as pd
 from pyspark.sql.functions import monotonically_increasing_id
 
-filename = "/media/slr/TOSHIBA EXT/filtered_data/filtered_sorted_partaa.csv"
+
+filename = "filtered_sorted_partaa.csv"
 
 spark = SparkSession \
     .builder \
@@ -15,7 +16,6 @@ spark = SparkSession \
 # spark is an existing SparkSession
 df = spark.read.load(filename,format="csv", sep=",", inferSchema="true", header="false").toDF("Index","busId" , "latitude", "longitude", "angle", "speed", "timestamp")
 # Displays the content of the DataFrame to stdout
-df.printSchema()
 length_lat = 0.032/2
 length_long = 0.043/2
 # i rows 42
@@ -26,21 +26,7 @@ j = 0
 lat = 12.66 
 long = 77.27 
 
-listGrid = []
-while(lat < 13.32):
-    while(long < 78):
-        listGrid.append((i*34) + 42)
-        long += length_long
-        j += 1
-    i += 1
-    j = 0
-    lat += length_lat
-
-df_grid = SQLContext.createDataFrame([(l,) for l in listGrid], ['grid_value'])
-df = df.withColumn("row_idx", monotonically_increasing_id())
-df_grid = df_grid.withColumn("row_idx", monotonically_increasing_id())
-final_df = df.join(df_grid, df.row_idx == df_grid.row_idx).\
-             drop("row_idx")
-final_df.to_csv("../BMTC_sorted/filtered_encoded_partaa.csv")
+final_df = df.select('*', (((df.latitude-lat)/length_lat).cast("int") * 34 + ((df.longitude-long)/length_long).cast("int")).alias('grid_num'))
+final_df.show()
 
 
