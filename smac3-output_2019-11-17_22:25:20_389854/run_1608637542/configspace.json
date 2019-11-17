@@ -1,0 +1,24 @@
+{
+  "json_format_version": 0.1,
+  "forbiddens": [],
+  "hyperparameters": [
+    {
+      "upper": 20,
+      "default": 10,
+      "log": false,
+      "name": "comp",
+      "lower": 1,
+      "type": "uniform_int"
+    },
+    {
+      "upper": 5,
+      "default": 3,
+      "log": false,
+      "name": "deg",
+      "lower": 2,
+      "type": "uniform_int"
+    }
+  ],
+  "conditions": [],
+  "python_module_version": "0.4.11"
+}
