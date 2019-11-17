@@ -13,7 +13,7 @@ spark = SparkSession \
     .getOrCreate()
 
 # spark is an existing SparkSession
-df = spark.read.load(filename,format="csv", sep=",", inferSchema="true", header="false").toDF("Index","busId" , "latitude", "longitude", "angle", "speed", "timestamp")
+df = spark.read.load(filename,format="csv", sep=",", inferSchema="true", header="true").toDF("Index","busId" , "latitude", "longitude", "angle", "speed", "timestamp")
 # Displays the content of the DataFrame to stdout
 length_lat = 0.032/2
 length_long = 0.043/2
@@ -26,6 +26,8 @@ lat = 12.66
 long = 77.27 
 
 final_df = df.select('*', (((df.latitude-lat)/length_lat).cast("int") * 34 + ((df.longitude-long)/length_long).cast("int")).alias('grid_num'))
-final_df.show()
+# final_df.show()
+
+final_df.toPandas().to_csv("filtered_encoded_partaa.csv")
 
 
