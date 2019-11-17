@@ -5,8 +5,6 @@ import pandas as pd
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.decomposition import PCA
-from skopt import Optimizer
-from skopt.space import Integer
 from sklearn.metrics import mean_squared_error, r2_score
 
 df = pd.read_csv('encoded_grid_21_17.csv', header=None, nrows = 1000)
@@ -19,15 +17,16 @@ y = train.iloc[:,5].values
 print(X.shape)
 print(y.shape)
 
-poly = PolynomialFeatures(degree = 3) 
+poly = PolynomialFeatures(degree = 5) 
 X_poly = poly.fit_transform(X)
 X_poly = StandardScaler().fit_transform(X_poly)
 print(X_poly.shape)
 
-pca = PCA(n_components=3)
+comp=4
+cols = ['principal component ' + str(x) for x in range(1,comp+1)]
+pca = PCA(n_components=comp)
 principalComponents = pca.fit_transform(X_poly)
-principalDf = pd.DataFrame(data = principalComponents
-            , columns = ['principal component 1', 'principal component 2', 'principal component 3'])
+principalDf = pd.DataFrame(data = principalComponents , columns = cols)
   
 poly.fit(X_poly, y) 
 lin2 = LinearRegression() 
