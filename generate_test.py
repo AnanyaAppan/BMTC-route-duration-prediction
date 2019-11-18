@@ -6,14 +6,23 @@ df = pd.read_csv('lalliTrial/encoded_grid_21_17.csv', header=None, names = ["ind
 
 del df["index"]
 
-test_bus_ids = df.busId.unique()[:60]
+test_bus_ids = df.busId.unique()[-61:-1]
 
 print(len(test_bus_ids))
 # print(len(df))
 
 # print(df.loc[204790, "busId"] in test_bus_ids)
+# print (pd.DataFrame(df.loc[0]).T)
+
 for var in range(len(df)):
+    temp_df = pd.DataFrame(df.loc[var]).T
     if(df.loc[var, "busId"] in test_bus_ids):
-        df.loc[var].to_csv('lalliTrial/test_encoded_grid_21_17.csv', mode='a', header=False, index = False)
+        temp_df.to_csv('lalliTrial/test_encoded_grid_21_17.csv', mode='a', header=False, index = False)
     else:   
-        df.loc[var].to_csv('lalliTrial/train_encoded_grid_21_17.csv', mode='a', header=False, index = False)
+        temp_df.to_csv('lalliTrial/train_encoded_grid_21_17.csv', mode='a', header=False, index = False)
+
+# df1 = pd.read_csv('lalliTrial/test_encoded_grid_21_17.csv', header=None, names = ["busId" , "latitude", "longitude", "angle", "speed", "timestamp", "time", "day"])
+# df2 = pd.read_csv('lalliTrial/train_encoded_grid_21_17.csv', header=None, names = ["busId" , "latitude", "longitude", "angle", "speed", "timestamp", "time", "day"])
+
+# print (len(df1.busId.unique()))
+# print (len(df2.busId.unique()))
