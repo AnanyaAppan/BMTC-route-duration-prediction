@@ -1,4 +1,3 @@
-import operator
 import numpy as np 
 import matplotlib.pyplot as plt 
 import pandas as pd
@@ -7,17 +6,17 @@ from sklearn.linear_model import LinearRegression
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, r2_score
 
-df = pd.read_csv('encoded_grid_21_17.csv', header=None, nrows = 100000)
+df = pd.read_csv('lalliTrial/encoded_grid_21_17.csv', header=None, nrows = 100000)
 
 train=df.sample(frac=0.8,random_state=42) #random state is a seed value
 test=df.drop(train.index)
 
-X = train.iloc[:,[2,3,4,7]].values
+X = train.iloc[:,[2,3,7,8]].values
 y = train.iloc[:,5].values
-X_test = test.iloc[:,[2,3,4,7]].values
+X_test = test.iloc[:,[2,3,7,8]].values
 y_test = test.iloc[:,5].values
 
-poly = PolynomialFeatures(degree = 5) 
+poly = PolynomialFeatures(degree = 8) 
 X_poly = poly.fit_transform(X)
 X_poly_test = poly.fit_transform(X_test)
 X_poly = StandardScaler().fit_transform(X_poly)
