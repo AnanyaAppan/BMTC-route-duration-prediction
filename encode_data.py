@@ -1,5 +1,7 @@
 import pandas as pd 
 
+
+
 chunk = pd.read_csv("grid_21_17_zero_removed.csv", names = ["Index","busId" , "latitude", "longitude", "angle", "speed", "timestamp"])
 df = pd.DataFrame(chunk)
 
