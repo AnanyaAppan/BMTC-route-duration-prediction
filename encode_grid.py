@@ -4,7 +4,7 @@ import sys
 import pandas as pd
 from pyspark.sql.functions import monotonically_increasing_id
 
-filename = "filtered_sorted_partaa.csv"
+filename = "../../BMTC/filtered_data/" + sys.argv[1]
 
 spark = SparkSession \
     .builder \
@@ -25,9 +25,7 @@ j = 0
 lat = 12.66 
 long = 77.27 
 
-final_df = df.select('*', (((df.latitude-lat)/length_lat).cast("int") * 34 + ((df.longitude-long)/length_long).cast("int")).alias('grid_num'))
-# final_df.show()
+df_encoded = df.select('*', (((df.latitude-lat)/length_lat).cast("int") * 34 + ((df.longitude-long)/length_long).cast("int")).alias('grid_num'))
+# df_encoded.show()
 
-final_df.toPandas().to_csv("filtered_encoded_partaa.csv")
-
-
+df_encoded.toPandas().to_csv("../../BMTC/encoded_data/encoded_"+ sys.argv[1],header=False, index = False)

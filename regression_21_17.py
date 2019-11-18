@@ -7,10 +7,12 @@ from sklearn.linear_model import LinearRegression
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, r2_score
 
-df = pd.read_csv('encoded_grid_21_17.csv', header=None, nrows = 1000)
+df = pd.read_csv('encoded_grid_21_17.csv', header=None)
 
-train=df.sample(frac=0.8,random_state=200) #random state is a seed value
-test=df.drop(train.index)
+train = df
+
+# train=df.sample(frac=0.8,random_state=200) #random state is a seed value
+# test=df.drop(train.index)
 
 X = train.iloc[:,[2,3,4,7]].values
 y = train.iloc[:,5].values
@@ -22,11 +24,11 @@ X_poly = poly.fit_transform(X)
 X_poly = StandardScaler().fit_transform(X_poly)
 print(X_poly.shape)
 
-comp=4
+comp=70
 cols = ['principal component ' + str(x) for x in range(1,comp+1)]
 pca = PCA(n_components=comp)
 principalComponents = pca.fit_transform(X_poly)
-principalDf = pd.DataFrame(data = principalComponents , columns = cols)
+X_poly = pd.DataFrame(data = principalComponents , columns = cols)
   
 poly.fit(X_poly, y) 
 lin2 = LinearRegression() 
@@ -37,6 +39,10 @@ rmse = np.sqrt(mean_squared_error(y,y_poly_pred))
 r2 = r2_score(y,y_poly_pred)
 print(rmse)
 print(r2)
+
+train.insert(8,"predicted_speed",y_poly_pred)
+
+train.to_csv("fitted_21_17.csv")
 
 # plt.scatter(X, y, s=10)
 # # sort the values of x before line plot
