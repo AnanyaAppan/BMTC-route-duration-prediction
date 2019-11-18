@@ -42,6 +42,10 @@ r2 = r2_score(y_test,y_poly_pred)
 print(rmse)
 print(r2)
 
+train.insert(8,"predicted_speed",y_poly_pred)
+
+train.to_csv("fitted_21_17.csv")
+
 # plt.scatter(X, y, s=10)
 # # sort the values of x before line plot
 # sort_axis = operator.itemgetter(0)

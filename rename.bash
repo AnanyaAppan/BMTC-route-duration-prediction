@@ -20,3 +20,11 @@ do
     python3 encode_grid.py "${f:25:-1}v"
     echo{"${f:25:-1}v"}
 done
+
+for f in '../../BMTC/encoded_data/'*;
+do
+    sort -t"," -n -k8 "$f" > "../../BMTC/sorted_encoded_data/${f:24:-1}v";
+    echo "${f:24:-1}v"
+done
+
+sort -m --parallel=8 -t"," -n -k8 "../../BMTC/sorted_encoded_data/"* > "../../BMTC/sorted_encoded_data/final_sorted.csv";
