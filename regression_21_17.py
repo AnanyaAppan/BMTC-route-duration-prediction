@@ -7,7 +7,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, r2_score
 
-df = pd.read_csv('encoded_grid_21_17.csv', header=None, nrows = 1000)
+df = pd.read_csv('encoded_grid_21_17.csv', header=None, nrows = 100000)
 
 train=df.sample(frac=0.8,random_state=200) #random state is a seed value
 test=df.drop(train.index)
@@ -17,16 +17,16 @@ y = train.iloc[:,5].values
 print(X.shape)
 print(y.shape)
 
-poly = PolynomialFeatures(degree = 5) 
+poly = PolynomialFeatures(degree = 7) 
 X_poly = poly.fit_transform(X)
 X_poly = StandardScaler().fit_transform(X_poly)
 print(X_poly.shape)
 
-comp=4
+comp=20
 cols = ['principal component ' + str(x) for x in range(1,comp+1)]
 pca = PCA(n_components=comp)
 principalComponents = pca.fit_transform(X_poly)
-principalDf = pd.DataFrame(data = principalComponents , columns = cols)
+X_poly = pd.DataFrame(data = principalComponents , columns = cols)
   
 poly.fit(X_poly, y) 
 lin2 = LinearRegression() 
