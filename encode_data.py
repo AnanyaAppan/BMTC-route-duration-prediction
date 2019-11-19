@@ -10,11 +10,14 @@ def encode_weekday(timestamp):
 
 chunksize = 10 ^ 6
 
-for chunk in pd.read_csv("../../BMTC/sorted_encoded_data/final_sorted.csv", names = ["Index","busId" , "latitude", "longitude", "angle", "speed", "timestamp","gridNum"], chunksize = chunksize):
+for chunk in pd.read_csv("filtered_encoded_partaa.csv",skiprows=1, names = ["index1","index","busId" , "latitude", "longitude", "angle", "speed", "timestamp","gridNum"], chunksize = chunksize):
 
     df = pd.DataFrame(chunk)
+
+    del df["index1"]
+    del df["index"]
 
     df["time"] = [int(var[11:13])*60 + int(var[14:16]) for var in df["timestamp"]]
     df["day"] = [encode_weekday(var) for var in df["timestamp"]]
 
-    df.to_csv('../../BMTC/sorted_encoded_data/final_encoded.csv', mode='a', header=False, index = False)
+    df.to_csv('lalliTrial/final_encoded.csv', mode='a', header=False, index = False)
