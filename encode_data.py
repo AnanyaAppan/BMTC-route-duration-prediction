@@ -8,10 +8,14 @@ def encode_weekday(timestamp):
     encode_week = (date + ((13*month-1)/5) + last_two_year + (last_two_year/4) + (first_two_year/4) -2*first_two_year)%7
     return encode_week
 
-chunksize = 10 ** 6
-var = 0
-ndx = True
-for chunk in pd.read_csv("grid_21_17.csv",skiprows=0, names = ["index","busId" , "latitude", "longitude", "angle", "speed", "timestamp","gridNum"], chunksize = chunksize):
+def encode_time(timestamp):
+    minutes = int(timestamp[11:13])*60 + int(timestamp[14:16])
+    return minutes/30
+
+
+chunksize = 10 ^ 6
+
+for chunk in pd.read_csv("filtered_encoded_partaa.csv",skiprows=1, names = ["index1","index","busId" , "latitude", "longitude", "angle", "speed", "timestamp","gridNum"], chunksize = chunksize):
 
     df = pd.DataFrame(chunk)
 
