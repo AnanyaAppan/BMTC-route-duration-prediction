@@ -15,5 +15,5 @@ for chunk in pd.read_csv(filepath + "encoded_hundred.csv", names = ["index1", "b
         temp_df = pd.DataFrame(val).T
         if(int(val[0]) in busId):
             temp_df.to_csv(filepath + "buses/" + str(val[0]) + ".csv", mode='a', header=False, index = False)
-        else:
-            temp_df.to_csv(filepath + "train_encoded_hundred.csv", mode='a', header=False, index = False)
+        # else:
+        #     temp_df.to_csv(filepath + "train_hundred.csv", mode='a', header=False, index = False)
