@@ -39,10 +39,10 @@ def subgrid(lat_test, long_test):
     subgrid_num = subgrid_i*10 + subgrid_j
     return subgrid_num
 
-def get_half_hour(time):
-    return (time/30).cast("int")
+def get_min(time):
+    return (time/60).cast("int")
 
-filename = "lalliTrial/final_encoded.csv"
+filename = "/home/ananya/Documents/BMTC/hundred/encoded_sec.csv"
 
 spark = SparkSession \
     .builder \
@@ -51,6 +51,6 @@ spark = SparkSession \
     .getOrCreate()
 
 # # spark is an existing SparkSession
-df = spark.read.load(filename,format="csv", sep=",", inferSchema="true", header=True).toDF("busId" , "latitude", "longitude", "angle", "speed", "timestamp","grid_num","time","day")
+df = spark.read.load(filename,format="csv", sep=",", inferSchema="true", header=True).toDF("busid","latitude", "longitude", "angle", "speed", "timestamp", "gridnum", "day", "time")
 # # df.show()
-df.groupBy("grid_num",(subgrid(df.latitude,df.longitude)).alias("subgrid"),get_half_hour(df.time).alias("half_hour"), "day").avg("speed").show()
+df.groupBy("grid_num",(subgrid(df.latitude,df.longitude)).alias("subgrid"),get_min(df.time).alias("min"), "day").avg("speed").show()
