@@ -1,5 +1,7 @@
 from pyspark.sql import SparkSession
 import sys
+import pandas as pd
+import pyspark.sql.functions as f
 
 length_lat = 0.032/2
 length_long = 0.043/2
@@ -42,7 +44,7 @@ def subgrid(lat_test, long_test):
 def get_min(time):
     return (time/60).cast("int")
 
-filename = "/home/ananya/Documents/BMTC/hundred/encoded_sec.csv"
+filename = "/home/ananya/Documents/BMTC/final/fitted_final.csv"
 
 spark = SparkSession \
     .builder \
@@ -50,7 +52,17 @@ spark = SparkSession \
     .config("spark.some.config.option", "some-value") \
     .getOrCreate()
 
-# # spark is an existing SparkSession
-df = spark.read.load(filename,format="csv", sep=",", inferSchema="true", header=True).toDF("busid","latitude", "longitude", "angle", "speed", "timestamp", "gridnum", "day", "time")
-# # df.show()
-df.groupBy("grid_num",(subgrid(df.latitude,df.longitude)).alias("subgrid"),get_min(df.time).alias("min"), "day").avg("speed").show()
+chunksize = 10**3
+
+cols = ["index","busid","latitude", "longitude", "angle", "speed", "timestamp", "gridnum", "day", "time","predicted_speed"]
+
+for chunk in pd.read_csv(filename,header=None,names = cols, chunksize=chunksize):
+    pdf = pd.DataFrame(chunk)
+    df = spark.createDataFrame(pdf)
+    for data in list(df.predicted_speed):
+        print(type(data))
+        break
+    # df.groupBy(df.gridnum,(subgrid(df.latitude,df.longitude)).alias("subgrid"),df.day,get_min(df.time).alias("minutes")).avg(df.predicted_speed)
+    #avg(df._11)
+    # df.show()
+    # df.toPandas().to_csv("/home/ananya/Documents/BMTC/final/fitted_final_grouped.csv",header=False, index=False,mode='a')
