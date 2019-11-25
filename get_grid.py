@@ -52,17 +52,13 @@ spark = SparkSession \
     .config("spark.some.config.option", "some-value") \
     .getOrCreate()
 
-chunksize = 10**3
+chunksize = 10**5
 
 cols = ["index","busid","latitude", "longitude", "angle", "speed", "timestamp", "gridnum", "day", "time","predicted_speed"]
 
 for chunk in pd.read_csv(filename,header=None,names = cols, chunksize=chunksize):
     pdf = pd.DataFrame(chunk)
     df = spark.createDataFrame(pdf)
-    for data in list(df.predicted_speed):
-        print(type(data))
-        break
-    # df.groupBy(df.gridnum,(subgrid(df.latitude,df.longitude)).alias("subgrid"),df.day,get_min(df.time).alias("minutes")).avg(df.predicted_speed)
+    df = df.groupBy(df.gridnum,(subgrid(df.latitude,df.longitude)).alias("subgrid"),df.day,get_min(df.time).alias("minutes")).agg({"predicted_speed":"avg"})
     #avg(df._11)
-    # df.show()
-    # df.toPandas().to_csv("/home/ananya/Documents/BMTC/final/fitted_final_grouped.csv",header=False, index=False,mode='a')
+    df.toPandas().to_csv("/home/ananya/Documents/BMTC/final/fitted_final_grouped.csv",header=False, index=False,mode='a')
