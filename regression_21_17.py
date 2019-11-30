@@ -6,14 +6,16 @@ from sklearn.linear_model import LinearRegression
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error, r2_score
 
-df = pd.read_csv('lalliTrial/encoded_grid_21_17.csv', header=None, nrows = 100000)
+from sklearn.metrics import confusion_matrix
+
+df = pd.read_csv('/home/ananya/Documents/MLLab/BMTC-route-duration-prediction/final_encoded_grid_21_17.csv', header=None, nrows = 100000)
 
 train=df.sample(frac=0.8,random_state=42) #random state is a seed value
 test=df.drop(train.index)
 
-X = train.iloc[:,[2,3,7,8]].values
+X = train.iloc[:,[2,3,4,8,9]].values
 y = train.iloc[:,5].values
-X_test = test.iloc[:,[2,3,7,8]].values
+X_test = test.iloc[:,[2,3,4,8,9]].values
 y_test = test.iloc[:,5].values
 
 poly = PolynomialFeatures(degree = 8) 
@@ -42,9 +44,22 @@ r2 = r2_score(y_test,y_poly_pred)
 print(rmse)
 print(r2)
 
-train.insert(8,"predicted_speed",y_poly_pred)
+labels = ['speed', 'predicted_speed']
+cm = confusion_matrix(y_test, y_poly_pred, labels)
+print(cm)
+fig = plt.figure()
+ax = fig.add_subplot(111)
+cax = ax.matshow(cm)
+plt.title('Confusion matrix of the classifier')
+fig.colorbar(cax)
+ax.set_xticklabels([''] + labels)
+ax.set_yticklabels([''] + labels)
+plt.xlabel('Predicted')
+plt.ylabel('True')
+plt.show()
+# train.insert(8,"predicted_speed",y_poly_pred)
 
-train.to_csv("fitted_21_17.csv")
+# train.to_csv("fitted_21_17.csv")
 
 # plt.scatter(X, y, s=10)
 # # sort the values of x before line plot

@@ -8,7 +8,7 @@ from sklearn import metrics
 
 chunksize = 10**5  
 
-for chunk in pd.read_csv('/home/ananya/Documents/BMTC/final/encoded_sec.csv', header=None, chunksize=chunksize,skiprows=164399999):
+for chunk in pd.read_csv('/home/ananya/Documents/MLLab/BMTC-route-duration-prediction/final_encoded_grid_21_17.csv', header=None, chunksize=chunksize,skiprows=164399999):
 
     # train = df.sample(frac=0.8,random_state=42) #random state is a seed value
     # test = df.drop(train.index)

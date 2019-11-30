@@ -13,15 +13,15 @@ def encode_time(timestamp):
     return minutes/30
 
 
-# chunksize = 10 ^ 6
+chunksize = 10 ^ 6
 
-# for chunk in pd.read_csv("filtered_encoded_partaa.csv",skiprows=1, names = ["index1","index","busId" , "latitude", "longitude", "angle", "speed", "timestamp","gridNum"], chunksize = chunksize):
+for chunk in pd.read_csv("/home/ananya/Documents/MLLab/BMTC-route-duration-prediction/encoded_grid_21_17.csv",skiprows=1, names = ["index","busId" , "latitude", "longitude", "angle", "speed", "timestamp","gridNum"], chunksize = chunksize):
 
-#     df = pd.DataFrame(chunk)
+    df = pd.DataFrame(chunk)
 
-#     del df["index"]
+    del df["index"]
 
-#     df["time"] = [int(var[11:13])*60 + int(var[14:16]) for var in df["timestamp"]]
-#     df["day"] = [encode_weekday(var) for var in df["timestamp"]]
+    df["time"] = [encode_time(var) for var in df["timestamp"]]
+    df["day"] = [encode_weekday(var) for var in df["timestamp"]]
 
-#     df.to_csv('lalliTrial/encoded_grid_21_17.csv', mode='a', header=False)
+    df.to_csv('final_encoded_grid_21_17.csv', mode='a', header=False)
