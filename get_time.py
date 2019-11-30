@@ -43,14 +43,14 @@ def get_time(lat1, lon1, lat2, lon2, timestamp):
     filename1 = "/home/ananya/Documents/BMTC/final/"+str(closest_grid1)+".csv"
     filename2 = "/home/ananya/Documents/BMTC/final/"+str(closest_grid2)+".csv"
 
-    print(filename1)
-    print(filename2)
+    # print(filename1)
+    # print(filename2)
 
     speed1 = 0
     speed2 = 0
 
-    print("grid1 = ",grid1, " closest grid = ", closest_grid1)
-    print("grid2 = ",grid2, " closest grid = ", closest_grid2)
+    # print("grid1 = ",grid1, " closest grid = ", closest_grid1)
+    # print("grid2 = ",grid2, " closest grid = ", closest_grid2)
 
     for chunk in pd.read_csv(filename1,header=None,names = ["index","grid","subgrid","day","time","speed"], chunksize=chunksize):
         
@@ -75,7 +75,7 @@ def get_time(lat1, lon1, lat2, lon2, timestamp):
                 i += 1
                 speed1 = pdf.iloc[i].speed
 
-        print("speed1 =", speed1)
+        # print("speed1 =", speed1)
 
     for chunk in pd.read_csv(filename2,header=None,names = ["index","grid","subgrid","day","time","speed"], chunksize=chunksize):
         
@@ -100,23 +100,23 @@ def get_time(lat1, lon1, lat2, lon2, timestamp):
                 i += 1
                 speed2 = pdf.iloc[i].speed
 
-        print("speed2 =", speed2)
+        # print("speed2 =", speed2)
 
-    print("distance = ",distance)
+    # print("distance = ",distance)
     
     avg_speed = (speed1+speed2) / 2
-    print(avg_speed)
+    # print(avg_speed)
 
     if(avg_speed == 0): avg_speed = 10
 
     # time in seconds
     time = (distance/avg_speed)*3600 
-    print(time)
+    # print(time)
     return time
 
 def increment_timestamp(time, timestamp):
-    print("time = ",time)
-    print("timestamp = ",timestamp)
+    # print("time = ",time)
+    # print("timestamp = ",timestamp)
     datetimeObj = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
     return str(datetimeObj + timedelta(seconds = int(time)))
 
@@ -131,14 +131,15 @@ def get_total_time(lat_long, timestamp):
     return time,timestamp
 
 # increment_timestamp(345.78,'2016-07-01 00:06:10')
-for chunk in pd.read_csv('/home/ananya/Documents/BMTC/test.csv', header=None, chunksize=chunksize,skiprows=1):
+for chunk in pd.read_csv('/home/ananya/Documents/BMTC/test.csv', header=None, chunksize=chunksize,skiprows=55):
     df = pd.DataFrame(chunk)
     for i in range(len(df)):
         row = df.iloc[i].values
+        bus_id = row[0]
         timestamp = row[1].strip()
         lat_long = row[2:]
         f_time,f_timestamp = get_total_time(lat_long, timestamp)
-        data = {"final_time" : [f_time], "final_timestamp" : [f_timestamp]}
+        data = {"bus_id" : [bus_id], "time" : [f_time]}
         df_new = pd.DataFrame(data)
         df_new.to_csv("/home/ananya/Documents/BMTC/final/bigFiles/test_final.csv",header=False, index=False,mode='a')
 
