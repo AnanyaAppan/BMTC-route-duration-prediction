@@ -6,9 +6,9 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn import metrics
 
-chunksize = 10**5  
+chunksize = (10**5)
 
-for chunk in pd.read_csv('/home/ananya/Documents/MLLab/BMTC-route-duration-prediction/final_encoded_grid_21_17.csv', header=None, chunksize=chunksize,skiprows=164399999):
+for chunk in pd.read_csv('/home/slr/Desktop/ML/Project/encoded_sec.csv', header=None, chunksize=chunksize):
 
     # train = df.sample(frac=0.8,random_state=42) #random state is a seed value
     # test = df.drop(train.index)
@@ -35,5 +35,9 @@ for chunk in pd.read_csv('/home/ananya/Documents/MLLab/BMTC-route-duration-predi
 
     train.insert(10,"predicted_speed",y_pred)
 
+<<<<<<< Updated upstream
     train.to_csv("/home/ananya/Documents/BMTC/final/fitted_final.csv",header=False, index=False,mode='a')
+=======
+    train.to_csv("/home/slr/Desktop/ML/Project/fitted_hundred.csv",header=False, index=False,mode='a')
+>>>>>>> Stashed changes
 
