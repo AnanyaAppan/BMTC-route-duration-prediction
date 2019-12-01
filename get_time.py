@@ -31,7 +31,7 @@ def get_time(lat1, lon1, lat2, lon2, timestamp):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
     # distance in km
     distance = radius * c
-    avg_speed = 0
+    max_speed = 0
     grid1 = get_grid(lat1, lon1)
     grid2 = get_grid(lat2, lon2)
     sub_grid1 = sub_grid(lat1, lon1)
@@ -49,15 +49,15 @@ def get_time(lat1, lon1, lat2, lon2, timestamp):
     speed1 = 0
     speed2 = 0
 
-    # print("grid1 = ",grid1, " closest grid = ", closest_grid1)
-    # print("grid2 = ",grid2, " closest grid = ", closest_grid2)
+    print("grid1 = ",grid1, " closest grid = ", closest_grid1)
+    print("grid2 = ",grid2, " closest grid = ", closest_grid2)
 
     for chunk in pd.read_csv(filename1,header=None,names = ["index","grid","subgrid","day","time","speed"], chunksize=chunksize):
         
         pdf = pd.DataFrame(chunk)
         df = spark.createDataFrame(pdf)
+        df.groupby(df.subgrid,df.day,df.time/60*60).agg({"speed":"avg"})
         df1 = df.filter((df.subgrid <= sub_grid1) & (df.day <= encode_weekday(timestamp)) & (df.time <= encode_time(timestamp))).toPandas()
-        
         df1 = df1.sort_values('subgrid')
         df1 = df1.sort_values('day')
         df1 = df1.sort_values('time')
@@ -69,18 +69,25 @@ def get_time(lat1, lon1, lat2, lon2, timestamp):
                 i -= 1
                 speed1 = df1.iloc[i].speed
         else : 
+            df1 = df.filter((df.subgrid >= sub_grid1) & (df.day >= encode_weekday(timestamp)) & (df.time >= encode_time(timestamp))).toPandas()
+        
+            df1 = df1.sort_values('subgrid')
+            df1 = df1.sort_values('day')
+            df1 = df1.sort_values('time')
             i = 0
-            speed1 = pdf.iloc[0].speed
-            while(speed1 == 0 and i<len(pdf)):
+            speed1 = df1.iloc[0].speed
+            while(speed1 == 0 and i<len(df1)):
                 i += 1
-                speed1 = pdf.iloc[i].speed
+                speed1 = df1.iloc[i].speed
 
-        # print("speed1 =", speed1)
+        print("speed1 =", speed1)
 
     for chunk in pd.read_csv(filename2,header=None,names = ["index","grid","subgrid","day","time","speed"], chunksize=chunksize):
         
         pdf = pd.DataFrame(chunk)
+        # pdf.groupby(pdf.time/60*60).avg(pdf.speed)
         df = spark.createDataFrame(pdf)
+        df.groupby(df.subgrid,df.day,df.time/60*60).agg({"speed":"avg"})
         df2 = df.filter((df.subgrid <= sub_grid2) & (df.day <= encode_weekday(timestamp)) & (df.time <= encode_time(timestamp))).toPandas()
 
         df2 = df2.sort_values('subgrid')
@@ -94,24 +101,29 @@ def get_time(lat1, lon1, lat2, lon2, timestamp):
                 i -= 1
                 speed2 = df2.iloc[i].speed
         else : 
+            df2 = df.filter((df.subgrid >= sub_grid2) & (df.day >= encode_weekday(timestamp)) & (df.time >= encode_time(timestamp))).toPandas()
+
+            df2 = df2.sort_values('subgrid')
+            df2 = df2.sort_values('day')
+            df2 = df2.sort_values('time')
             i = 0
-            speed2 = pdf.iloc[0].speed
-            while(speed2 == 0 and i<len(pdf)):
+            speed2 = df2.iloc[0].speed
+            while(speed2 == 0 and i<len(df2)):
                 i += 1
-                speed2 = pdf.iloc[i].speed
+                speed2 = df2.iloc[i].speed
 
-        # print("speed2 =", speed2)
+        print("speed2 =", speed2)
 
-    # print("distance = ",distance)
+    print("distance = ",distance)
     
-    avg_speed = (speed1+speed2) / 2
-    # print(avg_speed)
-
-    if(avg_speed == 0): avg_speed = 10
+    max_speed = 25  
+    if(speed1 >= speed2 and speed1 > 25): max_speed = speed1
+    if(speed2 > speed1 and speed2 > 25): max_speed = speed2
+    print(max_speed)
 
     # time in seconds
-    time = (distance/avg_speed)*3600 
-    # print(time)
+    time = (distance/max_speed)*3600 
+    print(time)
     return time
 
 def increment_timestamp(time, timestamp):
@@ -131,7 +143,7 @@ def get_total_time(lat_long, timestamp):
     return time,timestamp
 
 # increment_timestamp(345.78,'2016-07-01 00:06:10')
-for chunk in pd.read_csv('/home/ananya/Documents/BMTC/test.csv', header=None, chunksize=chunksize,skiprows=55):
+for chunk in pd.read_csv('/home/ananya/Documents/BMTC/final_bmtc_test_data.csv', header=None, chunksize=chunksize,skiprows=1):
     df = pd.DataFrame(chunk)
     for i in range(len(df)):
         row = df.iloc[i].values
@@ -141,7 +153,7 @@ for chunk in pd.read_csv('/home/ananya/Documents/BMTC/test.csv', header=None, ch
         f_time,f_timestamp = get_total_time(lat_long, timestamp)
         data = {"bus_id" : [bus_id], "time" : [f_time]}
         df_new = pd.DataFrame(data)
-        df_new.to_csv("/home/ananya/Documents/BMTC/final/bigFiles/test_final.csv",header=False, index=False,mode='a')
+        df_new.to_csv("/home/ananya/Documents/BMTC/final/bigFiles/test_final_2.csv",header=False, index=False,mode='a')
 
 
 
