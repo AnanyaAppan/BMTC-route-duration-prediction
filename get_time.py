@@ -73,6 +73,8 @@ def get_time(lat1, lon1, lat2, lon2, timestamp):
         df = df.sort_values(["abs_subgrid","abs_day","abs_time"])
         # print(df.head())
         speed1 = df.iloc[0].speed
+        if(speed1 == 0): speed1 = df.groupby(["abs_subgrid","abs_day",pd.to_numeric(df.time/60, downcast='integer')])["speed"].mean().iloc[0]
+        if(speed1 == 0): speed1 = df.groupby(["abs_subgrid","abs_day"])["speed"].mean().iloc[0]
         if(speed1 == 0): speed1 = df.groupby("abs_subgrid")["speed"].mean().iloc[0]
         # print("speed1 =", speed1)
 
@@ -85,14 +87,18 @@ def get_time(lat1, lon1, lat2, lon2, timestamp):
         df = df.sort_values(["abs_subgrid","abs_day","abs_time"])
         # print(df.head())
         speed2 = df.iloc[0].speed
-        if(speed2 == 0): speed1 = df.groupby("abs_subgrid")["speed"].mean().iloc[0]
+        if(speed2 == 0): speed2 = df.groupby(["abs_subgrid","abs_day",pd.to_numeric(df.time/60, downcast='integer')])["speed"].mean().iloc[0]
+        if(speed2 == 0): speed2 = df.groupby(["abs_subgrid","abs_day"])["speed"].mean().iloc[0]
+        if(speed2 == 0): speed2 = df.groupby("abs_subgrid")["speed"].mean().iloc[0]
         # print("speed2 =", speed1)
 
     # print("distance = ",distance)
     
     avg_speed = (speed1 + speed2)/2
-    if(avg_speed == 0): avg_speed = 10
+    if(avg_speed == 0): avg_speed = 0.1
+    # if(avg_speed == 0): avg_speed = 10
     # time in seconds
+    if(distance==0): distance = 0.001
     time = (distance/avg_speed)*3600 
     print("time = ",time)
     return time
@@ -114,7 +120,7 @@ def get_total_time(lat_long, timestamp):
     return time,timestamp
 
 # increment_timestamp(345.78,'2016-07-01 00:06:10')
-for chunk in pd.read_csv('/home/ananya/Documents/BMTC/final_bmtc_test_data.csv', header=None, chunksize=chunksize,skiprows=55):
+for chunk in pd.read_csv('/home/ananya/Documents/BMTC/final_bmtc_test_data.csv', header=None, chunksize=chunksize,skiprows=1):
     df = pd.DataFrame(chunk)
     for i in range(len(df)):
         row = df.iloc[i].values
@@ -124,7 +130,7 @@ for chunk in pd.read_csv('/home/ananya/Documents/BMTC/final_bmtc_test_data.csv',
         f_time,f_timestamp = get_total_time(lat_long, timestamp)
         data = {"bus_id" : [bus_id], "time" : [f_time]}
         df_new = pd.DataFrame(data)
-        df_new.to_csv("/home/ananya/Documents/BMTC/final/bigFiles/test_final_3.csv",header=False, index=False,mode='a')
+        df_new.to_csv("/home/ananya/Documents/BMTC/final/bigFiles/test_final_5.csv",header=False, index=False,mode='a')
 
 
 
