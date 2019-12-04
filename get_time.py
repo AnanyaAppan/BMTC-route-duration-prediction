@@ -37,7 +37,7 @@ def grid_dist(grid1,grid2):
 def closest_col(col1, col2):
     return pd.Series.abs(col1-col2)
 
-def get_time(lat1, lon1, lat2, lon2, timestamp):
+def get_lat_lon_dist(lat1,lon1,lat2,lon2):
     radius = 6371
     dLat = (math.pi/180)*(lat2-lat1)
     dLon = (math.pi/180)*(lon2-lon1)
@@ -45,13 +45,17 @@ def get_time(lat1, lon1, lat2, lon2, timestamp):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
     # distance in km
     distance = radius * c
+    return distance
+
+def get_time(lat1, lon1, lat2, lon2, timestamp):
+    
     grid1 = get_grid(lat1, lon1)
     grid2 = get_grid(lat2, lon2)
     sub_grid1 = sub_grid(lat1, lon1)
     sub_grid2 = sub_grid(lat2, lon2)
     day = encode_weekday(timestamp)
     time = encode_time(timestamp)
-
+    distance = get_lat_lon_dist(lat1,lon1,lat2,lon2)
     closest_grid1 = int(min(files, key=lambda x:grid_dist(x,grid1)))
     closest_grid2 = int(min(files, key=lambda x:grid_dist(x,grid2)))
 
@@ -73,8 +77,8 @@ def get_time(lat1, lon1, lat2, lon2, timestamp):
         df = df.sort_values(["abs_subgrid","abs_day","abs_time"])
         # print(df.head())
         speed1 = df.iloc[0].speed
-        if(speed1 == 0): speed1 = df.groupby(["abs_subgrid","abs_day",pd.to_numeric(df.time/60, downcast='integer')])["speed"].mean().iloc[0]
-        if(speed1 == 0): speed1 = df.groupby(["abs_subgrid","abs_day"])["speed"].mean().iloc[0]
+        # if(speed1 == 0): speed1 = df.groupby(["abs_subgrid","abs_day",pd.to_numeric(df.time/60, downcast='integer')])["speed"].mean().iloc[0]
+        # if(speed1 == 0): speed1 = df.groupby(["abs_subgrid","abs_day"])["speed"].mean().iloc[0]
         if(speed1 == 0): speed1 = df.groupby("abs_subgrid")["speed"].mean().iloc[0]
         # print("speed1 =", speed1)
 
@@ -87,18 +91,18 @@ def get_time(lat1, lon1, lat2, lon2, timestamp):
         df = df.sort_values(["abs_subgrid","abs_day","abs_time"])
         # print(df.head())
         speed2 = df.iloc[0].speed
-        if(speed2 == 0): speed2 = df.groupby(["abs_subgrid","abs_day",pd.to_numeric(df.time/60, downcast='integer')])["speed"].mean().iloc[0]
-        if(speed2 == 0): speed2 = df.groupby(["abs_subgrid","abs_day"])["speed"].mean().iloc[0]
+        # if(speed2 == 0): speed2 = df.groupby(["abs_subgrid","abs_day",pd.to_numeric(df.time/60, downcast='integer')])["speed"].mean().iloc[0]
+        # if(speed2 == 0): speed2 = df.groupby(["abs_subgrid","abs_day"])["speed"].mean().iloc[0]
         if(speed2 == 0): speed2 = df.groupby("abs_subgrid")["speed"].mean().iloc[0]
         # print("speed2 =", speed1)
 
     # print("distance = ",distance)
     
     avg_speed = (speed1 + speed2)/2
-    if(avg_speed == 0): avg_speed = 0.1
+    if(avg_speed == 0): avg_speed = 0.01
     # if(avg_speed == 0): avg_speed = 10
     # time in seconds
-    if(distance==0): distance = 0.001
+    if(distance==0): distance = 0.01
     time = (distance/avg_speed)*3600 
     print("time = ",time)
     return time
@@ -119,6 +123,28 @@ def get_total_time(lat_long, timestamp):
         timestamp = increment_timestamp(temp_time, timestamp)
     return time,timestamp
 
+def get_intermediate_nodes(l):
+    l_new = []
+    for i in range(1,len(l)):
+        lat1,lon1 = map(float, l[i-1].split(":"))
+        l_new.append(str(lat1)+":"+str(lon1))
+        lat2,lon2 = map(float, l[i].split(":"))
+        d = get_lat_lon_dist(lat1,lon1,lat2,lon2)
+        if(d > 0.125): 
+            m = 0.125
+            while(m<d):
+                x = m
+                y = d-m
+                lat_new = (x*lat2 + y*lat1)/(x+y)
+                lon_new = (x*lon1 + y*lon2)/(x+y)
+                l_new.append(str(lat_new)+":"+str(lon_new))
+                m += 0.125
+    l_new.append(l[len(l)-1])
+    # print(l_new)
+    return l_new
+
+
+
 # increment_timestamp(345.78,'2016-07-01 00:06:10')
 for chunk in pd.read_csv('/home/ananya/Documents/BMTC/final_bmtc_test_data.csv', header=None, chunksize=chunksize,skiprows=1):
     df = pd.DataFrame(chunk)
@@ -126,11 +152,12 @@ for chunk in pd.read_csv('/home/ananya/Documents/BMTC/final_bmtc_test_data.csv',
         row = df.iloc[i].values
         bus_id = row[0]
         timestamp = row[1].strip()
-        lat_long = row[2:]
+        lat_long = get_intermediate_nodes(row[2:])
+        get_intermediate_nodes(lat_long)
         f_time,f_timestamp = get_total_time(lat_long, timestamp)
         data = {"bus_id" : [bus_id], "time" : [f_time]}
         df_new = pd.DataFrame(data)
-        df_new.to_csv("/home/ananya/Documents/BMTC/final/bigFiles/test_final_5.csv",header=False, index=False,mode='a')
+        df_new.to_csv("/home/ananya/Documents/BMTC/final/bigFiles/test_final_7.csv",header=False, index=False,mode='a')
 
 
 
